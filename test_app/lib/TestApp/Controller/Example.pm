@@ -1,5 +1,6 @@
 package TestApp::Controller::Example;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
+use Mojo::Headers;
 use Data::Dumper;
 
 # This action will render a template
@@ -11,7 +12,9 @@ sub welcome ($self) {
 }
 
 sub index {
-    my $self = shift;
+    my $self    = shift;
+    my $headers = Mojo::Headers->new;
+    $headers = $headers->access_control_allow_origin('https://example.com');
 
     my $name  = $self->req->param("name");
     my $email = $self->req->param("email");
