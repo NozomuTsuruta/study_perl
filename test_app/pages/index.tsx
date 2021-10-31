@@ -7,8 +7,15 @@ type IForm = {
 
 export default function Home(): JSX.Element {
   const { register, handleSubmit, reset } = useForm<IForm>();
-  const submit = (data: IForm) => {
-    console.log(data);
+  const submit = async (data: IForm) => {
+    const res = await fetch('http://127.0.0.1:3001', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then((d) => d.json());
+    console.log(res);
     reset();
   };
 
@@ -19,7 +26,7 @@ export default function Home(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <input type="text" {...register('name')} />
-      <button onClick={() => handleSubmit(submit)}>click</button>
+      <button onClick={handleSubmit(submit)}>click</button>
 
       <style jsx>{`
         .container {

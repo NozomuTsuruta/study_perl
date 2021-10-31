@@ -12,9 +12,7 @@ sub welcome ($self) {
 }
 
 sub index {
-    my $self    = shift;
-    my $headers = Mojo::Headers->new;
-    $headers = $headers->access_control_allow_origin('https://example.com');
+    my $self = shift;
 
     my $name  = $self->req->param("name");
     my $email = $self->req->param("email");

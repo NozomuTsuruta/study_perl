@@ -11,11 +11,13 @@ sub startup ($self) {
     $self->secrets( $config->{secrets} );
 
     # Router
-    my $r = $self->routes;
+    $self->plugin('SecureCORS');
+    my $r = $self->routes->to( 'cors.origin' => '*' );
 
     # Normal route to controller
     $r->get('/')->to('Example#welcome');
     $r->post('/')->to("Example#index");
+    $r->options('/');
 }
 
 1;
