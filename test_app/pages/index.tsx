@@ -1,22 +1,54 @@
 import Head from 'next/head';
-import { useForm } from 'react-hook-form';
+import { GetServerSideProps } from 'next';
+import { FormEvent, useState, useRef } from 'react';
 
-type IForm = {
-  name: string;
+type ITodo = {
+  id: string;
+  text: string;
 };
 
-export default function Home(): JSX.Element {
-  const { register, handleSubmit, reset } = useForm<IForm>();
-  const submit = async (data: IForm) => {
-    const res = await fetch('http://127.0.0.1:3001', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    }).then((d) => d.json());
-    console.log(res);
-    reset();
+export default function Home({ data }: { data: ITodo[] }): JSX.Element {
+  const [todos, setTodos] = useState<ITodo[]>(data);
+  const [editId, setEditId] = useState<string>();
+  const ref = useRef<HTMLInputElement>(null);
+  const editRef = useRef<HTMLInputElement>(null);
+
+  const customFetch = async (path: string, body: Partial<ITodo>) => {
+    try {
+      const res = await fetch(`http://localhost:3001/${path}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      setTodos(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (ref.current) {
+      if (ref.current.value.trim().length === 0) {
+        alert('1文字以上入力してください(スペースを除く)');
+        return;
+      }
+      await customFetch('create', { text: ref.current.value });
+      ref.current.value = '';
+    }
+  };
+
+  const handleUpdate = async (id: string, text: string) => {
+    await customFetch('update', { id, text });
+    setEditId(undefined);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm('本当に削除しますか？')) {
+      customFetch('delete', { id });
+    }
   };
 
   return (
@@ -25,9 +57,36 @@ export default function Home(): JSX.Element {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <input type="text" {...register('name')} />
-      <button onClick={handleSubmit(submit)}>click</button>
-
+      <form onSubmit={handleSubmit}>
+        <input type="text" ref={ref} placeholder="やることを追加" />
+        <button type="submit">追加</button>
+      </form>
+      <ul>
+        {todos &&
+          todos.map(({ id, text }) => (
+            <li key={id}>
+              {editId === id ? (
+                <>
+                  <input type="text" ref={editRef} defaultValue={text} />
+                  <button onClick={() => setEditId(undefined)}>
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={() => handleUpdate(id, editRef.current.value)}
+                  >
+                    保存
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>{text}</p>
+                  <button onClick={() => handleDelete(id)}>削除</button>
+                  <button onClick={() => setEditId(id)}>編集</button>
+                </>
+              )}
+            </li>
+          ))}
+      </ul>
       <style jsx>{`
         .container {
           min-height: 100vh;
@@ -38,7 +97,6 @@ export default function Home(): JSX.Element {
           align-items: center;
         }
       `}</style>
-
       <style jsx global>{`
         html,
         body {
@@ -56,3 +114,14 @@ export default function Home(): JSX.Element {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const res = await fetch('http://localhost:3001/read', {
+    method: 'GET',
+    mode: 'cors',
+  });
+  const data = await res.json();
+  return {
+    props: { data },
+  };
+};
