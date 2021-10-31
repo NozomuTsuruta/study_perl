@@ -6,41 +6,41 @@ use Data::Dumper;
 sub read ($self) {
     my $self = shift;
 
-    my $name  = $self->req->param("name");
-    my $email = $self->req->param("email");
+    my $id   = $self->req->param("id");
+    my $text = $self->req->param("text");
 
     # my $params_hash = $self->req->params->to_hash;
-    $self->render( json => { name => $name, email => $email } );
+    $self->render( json => { id => $id, text => $text } );
 }
 
 sub create {
     my $self = shift;
 
-    my $name  = $self->req->param("name");
-    my $email = $self->req->param("email");
+    my $id   = $self->req->param("id");
+    my $text = $self->req->param("text");
 
     # my $params_hash = $self->req->params->to_hash;
-    $self->render( json => { name => $name, email => $email } );
+    $self->render( json => { id => $id, text => $text } );
 }
 
 sub update {
     my $self = shift;
 
-    my $name  = $self->req->param("name");
-    my $email = $self->req->param("email");
+    my $id   = $self->req->param("id");
+    my $text = $self->req->param("text");
 
     # my $params_hash = $self->req->params->to_hash;
-    $self->render( json => { name => $name, email => $email } );
+    $self->render( json => { id => $id, text => $text } );
 }
 
 sub delete {
     my $self = shift;
 
-    my $name  = $self->req->param("name");
-    my $email = $self->req->param("email");
+    my $id   = $self->req->param("id");
+    my $text = $self->req->param("text");
 
     # my $params_hash = $self->req->params->to_hash;
-    $self->render( json => { name => $name, email => $email } );
+    $self->render( json => { id => $id, text => $text } );
 }
 
 1;
