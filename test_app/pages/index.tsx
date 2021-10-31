@@ -1,17 +1,27 @@
 import Head from 'next/head';
-import { GetServerSideProps } from 'next';
-import { FormEvent, useState, useRef } from 'react';
+import { FormEvent, useState, useRef, useEffect } from 'react';
 
 type ITodo = {
   id: string;
   text: string;
 };
 
-export default function Home({ data }: { data: ITodo[] }): JSX.Element {
-  const [todos, setTodos] = useState<ITodo[]>(data);
+export default function Home(): JSX.Element {
+  const [todos, setTodos] = useState<ITodo[]>([]);
   const [editId, setEditId] = useState<string>();
   const ref = useRef<HTMLInputElement>(null);
   const editRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch('http://localhost:3001/read', {
+        method: 'GET',
+        mode: 'cors',
+      });
+      const data = await res.json();
+      setTodos(data);
+    })();
+  }, []);
 
   const customFetch = async (path: string, body: Partial<ITodo>) => {
     try {
@@ -114,14 +124,3 @@ export default function Home({ data }: { data: ITodo[] }): JSX.Element {
     </div>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch('http://localhost:3001/read', {
-    method: 'GET',
-    mode: 'cors',
-  });
-  const data = await res.json();
-  return {
-    props: { data },
-  };
-};

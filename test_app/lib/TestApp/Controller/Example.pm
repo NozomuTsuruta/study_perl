@@ -3,15 +3,37 @@ use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Mojo::Headers;
 use Data::Dumper;
 
-# This action will render a template
-sub welcome ($self) {
+sub read ($self) {
+    my $self = shift;
 
-    # Render template "example/welcome.html.ep" with message
-    $self->render(
-        msg => 'Welcome to the Mojolicious real-time web framework!' );
+    my $name  = $self->req->param("name");
+    my $email = $self->req->param("email");
+
+    # my $params_hash = $self->req->params->to_hash;
+    $self->render( json => { name => $name, email => $email } );
 }
 
-sub index {
+sub create {
+    my $self = shift;
+
+    my $name  = $self->req->param("name");
+    my $email = $self->req->param("email");
+
+    # my $params_hash = $self->req->params->to_hash;
+    $self->render( json => { name => $name, email => $email } );
+}
+
+sub update {
+    my $self = shift;
+
+    my $name  = $self->req->param("name");
+    my $email = $self->req->param("email");
+
+    # my $params_hash = $self->req->params->to_hash;
+    $self->render( json => { name => $name, email => $email } );
+}
+
+sub delete {
     my $self = shift;
 
     my $name  = $self->req->param("name");

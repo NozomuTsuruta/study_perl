@@ -15,8 +15,10 @@ sub startup ($self) {
     my $r = $self->routes->to( 'cors.origin' => '*' );
 
     # Normal route to controller
-    $r->get('/')->to('Example#welcome');
-    $r->post('/')->to("Example#index");
+    $r->get('/read')->to('Example#read');
+    $r->post('/create')->to("Example#create");
+    $r->post('/update')->to("Example#update");
+    $r->post('/delete')->to("Example#delete");
     $r->options('/');
 }
 
