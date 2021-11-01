@@ -1,5 +1,6 @@
 package TestApp;
 use Mojo::Base 'Mojolicious', -signatures;
+use DBI;
 
 # This method will run once at server start
 sub startup ($self) {
@@ -16,7 +17,6 @@ sub startup ($self) {
     $self->secrets( $config->{secrets} );
 
     # Router
-    $self->plugin('SecureCORS');
     my $r = $self->routes->to( 'cors.origin' => '*' );
     my $dbh =
       DBI->connect( "dbi:Pg:dbname=$DB_NAME;host=$DB_HOST;port=$DB_PORT",
@@ -24,9 +24,9 @@ sub startup ($self) {
       or die "$!\n Error: failed to connect to DB.\n";
     $dbh->do(
         "CREATE TABLE IF NOT EXISTS todos (
-			id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-			text varchar(255) NOT NULL
-	        ) ENGINE=InnoDB;"
+			id SERIAL PRIMARY KEY,
+			text VARCHAR(255) NOT NULL
+	        );"
     );
 
     # Normal route to controller
